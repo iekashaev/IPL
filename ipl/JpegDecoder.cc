@@ -94,7 +94,7 @@ void* JpegDecoder::read_image(const std::string& image) {
     int sz = aw * ah;
     nvjpeg_image.pitch[c] = aw;
     nvjpeg_image.channel[c] =
-        reinterpret_cast<unsigned char*>(image_data_dev) + aw;
+        reinterpret_cast<unsigned char*>(image_data_dev) + (c * aw);
   }
 
   if (nvjpegDecode(nvjpeg_handle_, nvjpeg_state_,
