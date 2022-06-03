@@ -26,6 +26,9 @@ class Image {
         const std::vector<char>& encoded_data);
   ~Image();
 
+  void* get_data() const;
+  const std::vector<int> get_size() const;
+
  private:
   std::vector<char> encoded_data_;
   std::vector<int> size_;
