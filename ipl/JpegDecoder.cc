@@ -72,7 +72,7 @@ bool JpegDecoder::get_image_info(ImageInfo* info) {
   return true;
 }
 
-void* JpegDecoder::read_image(const std::string& image) {
+Image JpegDecoder::read_image(const std::string& image) {
   std::ifstream image_file(image,
                            std::ios::in | std::ios::binary | std::ios::ate);
   if (!image_file.is_open()) throw std::runtime_error("File open error!");
@@ -109,7 +109,8 @@ void* JpegDecoder::read_image(const std::string& image) {
                    0) != NVJPEG_STATUS_SUCCESS)
     throw std::runtime_error("NVJpeg decode error!");
 
-  return image_data_dev;
+  return Image({image_info.height, image_info.width, image_info.channels},
+               image_data_dev, image_info.data);
 }
 
 }  // namespace ipl

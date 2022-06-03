@@ -20,12 +20,15 @@
 #include <string>
 #include <vector>
 
+#include "ipl/Image.h"
+
 namespace ipl {
 
 struct ImageInfo {
   int width = 0;
   int height = 0;
   int channels = 0;
+  // Encoded data
   std::vector<char> data;
 };
 
@@ -35,7 +38,7 @@ class JpegDecoder {
   ~JpegDecoder();
 
   bool init();
-  void* read_image(const std::string& image);
+  Image read_image(const std::string& image);
 
  private:
   bool get_image_info(ImageInfo* info);
