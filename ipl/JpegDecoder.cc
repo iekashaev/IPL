@@ -98,7 +98,7 @@ Image JpegDecoder::read_image(const std::string& image) {
   nvjpegImage_t nvjpeg_image;
   for (int c = 0; c < image_info.channels; c++) {
     int sz = image_info.width * image_info.height;
-    nvjpeg_image.pitch[c] = sz;
+    nvjpeg_image.pitch[c] = image_info.width;
     nvjpeg_image.channel[c] =
         reinterpret_cast<unsigned char*>(image_data_dev) + (c * sz);
   }
@@ -106,7 +106,7 @@ Image JpegDecoder::read_image(const std::string& image) {
   if (nvjpegDecode(nvjpeg_handle_, nvjpeg_state_,
                    reinterpret_cast<unsigned char*>(image_info.data.data()),
                    file_size, NVJPEG_OUTPUT_RGB, &nvjpeg_image,
-                   0) != NVJPEG_STATUS_SUCCESS)
+                   stream_) != NVJPEG_STATUS_SUCCESS)
     throw std::runtime_error("NVJpeg decode error!");
 
   return Image({image_info.height, image_info.width, image_info.channels},
