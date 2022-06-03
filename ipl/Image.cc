@@ -22,4 +22,8 @@ Image::Image(std::initializer_list<int> size, void* data,
 
 Image::~Image() {}
 
+void* Image::get_data() const { return decoded_data_; }
+
+const std::vector<int> Image::get_size() const { return size_; }
+
 }  // namespace ipl
