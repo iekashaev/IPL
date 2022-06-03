@@ -18,6 +18,16 @@
 #include <nvjpeg.h>
 
 #include <string>
+#include <vector>
+
+namespace ipl {
+
+struct ImageInfo {
+  int width = 0;
+  int height = 0;
+  int channels = 0;
+  std::vector<char> data;
+};
 
 class JpegDecoder {
  public:
@@ -28,10 +38,15 @@ class JpegDecoder {
   void* read_image(const std::string& image);
 
  private:
+  bool get_image_info(ImageInfo* info);
+
+ private:
   // NVJpeg decode params
   nvjpegHandle_t nvjpeg_handle_;
   nvjpegJpegState_t nvjpeg_state_;
   cudaStream_t stream_;
 };
+
+}  // namespace ipl
 
 #endif  // IPL_JPEGDECODER_H_

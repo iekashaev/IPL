@@ -15,7 +15,8 @@
 #include "ipl/JpegDecoder.h"
 
 #include <fstream>
-#include <vector>
+
+namespace ipl {
 
 static int dev_malloc(void** p, size_t s) {
   return static_cast<int>(cudaMalloc(p, s));
@@ -52,6 +53,25 @@ bool JpegDecoder::init() {
   return true;
 }
 
+bool JpegDecoder::get_image_info(ImageInfo* info) {
+  int widths[NVJPEG_MAX_COMPONENT];
+  int heights[NVJPEG_MAX_COMPONENT];
+  int channels;
+  nvjpegChromaSubsampling_t subsampling;
+
+  if (nvjpegGetImageInfo(nvjpeg_handle_,
+                         reinterpret_cast<unsigned char*>(info->data.data()),
+                         info->data.size(), &channels, &subsampling, widths,
+                         heights) != NVJPEG_STATUS_SUCCESS)
+    return false;
+
+  info->width = widths[0];
+  info->height = heights[0];
+  info->channels = channels;
+
+  return true;
+}
+
 void* JpegDecoder::read_image(const std::string& image) {
   std::ifstream image_file(image,
                            std::ios::in | std::ios::binary | std::ios::ate);
@@ -60,48 +80,36 @@ void* JpegDecoder::read_image(const std::string& image) {
   std::streamsize file_size = image_file.tellg();
   image_file.seekg(0, std::ios::beg);
 
+  ImageInfo image_info;
   // Prepare buffer for image
-  std::vector<char> image_data(file_size);
+  image_info.data.resize(file_size);
 
-  if (!image_file.read(image_data.data(), file_size))
+  if (!image_file.read(image_info.data.data(), file_size))
     throw std::runtime_error("File read error!");
 
-  int widths[NVJPEG_MAX_COMPONENT];
-  int heights[NVJPEG_MAX_COMPONENT];
-  int channels;
-  nvjpegChromaSubsampling_t subsampling;
-
-  if (nvjpegGetImageInfo(nvjpeg_handle_,
-                         reinterpret_cast<unsigned char*>(image_data.data()),
-                         file_size, &channels, &subsampling, widths,
-                         heights) != NVJPEG_STATUS_SUCCESS)
-    throw std::runtime_error("NVJpeg get image info error!");
-
-  nvjpegImage_t nvjpeg_image;
-
-  channels = 3;
-  widths[1] = widths[2] = widths[0];
-  heights[1] = heights[2] = heights[0];
+  if (get_image_info(&image_info) == false)
+    throw std::runtime_error("Get image info error!");
 
   void* image_data_dev = nullptr;
-  if (dev_malloc(&image_data_dev, widths[0] * heights[0] * channels) !=
-      cudaSuccess)
+  if (dev_malloc(&image_data_dev, image_info.width * image_info.height *
+                                      image_info.channels) != cudaSuccess)
     throw std::runtime_error("Cuda malloc error!");
 
-  for (int c = 0; c < channels; c++) {
-    int aw = widths[c];
-    int ah = heights[c];
-    int sz = aw * ah;
-    nvjpeg_image.pitch[c] = aw;
+  nvjpegImage_t nvjpeg_image;
+  for (int c = 0; c < image_info.channels; c++) {
+    int sz = image_info.width * image_info.height;
+    nvjpeg_image.pitch[c] = sz;
     nvjpeg_image.channel[c] =
-        reinterpret_cast<unsigned char*>(image_data_dev) + (c * aw);
+        reinterpret_cast<unsigned char*>(image_data_dev) + (c * sz);
   }
 
   if (nvjpegDecode(nvjpeg_handle_, nvjpeg_state_,
-                   reinterpret_cast<unsigned char*>(image_data.data()),
+                   reinterpret_cast<unsigned char*>(image_info.data.data()),
                    file_size, NVJPEG_OUTPUT_RGB, &nvjpeg_image,
                    0) != NVJPEG_STATUS_SUCCESS)
     throw std::runtime_error("NVJpeg decode error!");
 
   return image_data_dev;
 }
+
+}  // namespace ipl
