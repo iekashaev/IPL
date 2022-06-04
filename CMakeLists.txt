@@ -21,6 +21,6 @@ find_library(NVJPEG_LIBRARY nvjpeg ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES} REQUI
 include_directories(${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}) 
 include_directories("${PROJECT_SOURCE_DIR}/include")
 
-add_executable(IPL main.cc ipl/JpegDecoder.cc ipl/Image.cc)
+add_executable(IPL main.cc ipl/JpegDecoder.cc ipl/JpegEncoder.cc ipl/Image.cc)
 
 target_link_libraries(IPL ${CUDA_LIBRARIES} nvjpeg)
