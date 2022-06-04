@@ -32,12 +32,14 @@ static int host_free(void* p) { return static_cast<int>(cudaFreeHost(p)); }
 
 JpegDecoder::JpegDecoder() {}
 
-JpegDecoder::~JpegDecoder() {}
+JpegDecoder::~JpegDecoder() {
+  nvjpegJpegStateDestroy(nvjpeg_state_);
+  nvjpegDestroy(nvjpeg_handle_);
+}
 
 bool JpegDecoder::init() {
   nvjpegDevAllocator_t dev_allocator = {dev_malloc, dev_free};
   nvjpegPinnedAllocator_t pinned_allocator = {host_malloc, host_free};
-
   if (nvjpegCreateEx(NVJPEG_BACKEND_DEFAULT, &dev_allocator, &pinned_allocator,
                      NVJPEG_FLAGS_DEFAULT,
                      &nvjpeg_handle_) != NVJPEG_STATUS_SUCCESS)
@@ -98,14 +100,15 @@ Image JpegDecoder::read_image(const std::string& image) {
   nvjpegImage_t nvjpeg_image;
   for (int c = 0; c < image_info.channels; c++) {
     int sz = image_info.width * image_info.height;
-    nvjpeg_image.pitch[c] = image_info.width;
     nvjpeg_image.channel[c] =
         reinterpret_cast<unsigned char*>(image_data_dev) + (c * sz);
+    nvjpeg_image.pitch[c] = static_cast<unsigned int>(image_info.width);
   }
+  nvjpeg_image.pitch[0] = static_cast<unsigned int>(image_info.width) * 3;
 
   if (nvjpegDecode(nvjpeg_handle_, nvjpeg_state_,
                    reinterpret_cast<unsigned char*>(image_info.data.data()),
-                   file_size, NVJPEG_OUTPUT_RGB, &nvjpeg_image,
+                   file_size, NVJPEG_OUTPUT_BGRI, &nvjpeg_image,
                    stream_) != NVJPEG_STATUS_SUCCESS)
     throw std::runtime_error("NVJpeg decode error!");
 
