@@ -108,7 +108,7 @@ Image JpegDecoder::read_image(const std::string& image) {
 
   if (nvjpegDecode(nvjpeg_handle_, nvjpeg_state_,
                    reinterpret_cast<unsigned char*>(image_info.data.data()),
-                   file_size, NVJPEG_OUTPUT_BGRI, &nvjpeg_image,
+                   file_size, NVJPEG_OUTPUT_RGBI, &nvjpeg_image,
                    stream_) != NVJPEG_STATUS_SUCCESS)
     throw std::runtime_error("NVJpeg decode error!");
 
