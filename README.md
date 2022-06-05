@@ -80,7 +80,6 @@ void encode() {
   ipl::JpegEncoder encoder;
   const int quality = 100;
   if (encoder.init(quality)) {
-    void* device_ptr = nullptr;
     ipl::Image dummy_image(DUMMY_IMAGE_SIZE, device_ptr);
     encoder.encode_image(IMAGE_NAME, dummy_image);
   } else {
