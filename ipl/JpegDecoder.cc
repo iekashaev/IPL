@@ -113,7 +113,7 @@ Image JpegDecoder::read_image(const std::string& image) {
     throw std::runtime_error("NVJpeg decode error!");
 
   return Image({image_info.height, image_info.width, image_info.channels},
-               image_data_dev, image_info.data);
+               image_data_dev);
 }
 
 }  // namespace ipl

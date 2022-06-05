@@ -16,9 +16,8 @@
 
 namespace ipl {
 
-Image::Image(std::initializer_list<int> size, void* data,
-             const std::vector<char>& encoded_data)
-    : size_(size), decoded_data_(data), encoded_data_(encoded_data) {}
+Image::Image(std::initializer_list<int> size, void* data)
+    : size_(size), decoded_data_(data) {}
 
 Image::~Image() {}
 
