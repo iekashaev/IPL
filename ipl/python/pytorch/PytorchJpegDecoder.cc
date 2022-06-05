@@ -37,7 +37,7 @@ torch::Tensor PytorchJpegDecoder::read_image(const std::string& image) {
       options);
 }
 
-PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
+void init_decoder(const py::module_& m) {
   py::class_<PytorchJpegDecoder>(m, "JpegDecoder")
       .def(py::init<>())
       .def("init", &PytorchJpegDecoder::init)
