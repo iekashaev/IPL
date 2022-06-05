@@ -57,5 +57,45 @@ def main():
 if __name__ == '__main__':
   main()
 ```
+#### C++
+```cc
+#include <iostream>
+#include "ipl/JpegDecoder.h"
+#include "ipl/JpegEncoder.h"
+
+#define JPEG_IMAGE_PATH ""
+#define DUMMY_IMAGE_SIZE {256, 256, 3}
+#define IMAGE_NAME ""
+
+void decode() {
+  ipl::JpegDecoder decoder;
+  if (decoder.init()) {
+    auto image = decoder.read_image(JPEG_IMAGE_PATH);
+  } else {
+    std::cout << "Can`t init decoder" << std::endl;
+  }
+}
+
+void encode() {
+  ipl::JpegEncoder encoder;
+  const int quality = 100;
+  if (encoder.init(quality)) {
+    void* device_ptr = nullptr;
+    ipl::Image dummy_image(DUMMY_IMAGE_SIZE, device_ptr);
+    encoder.encode_image(IMAGE_NAME, dummy_image);
+  } else {
+    std::cout << "Can`t init encoder" << std::endl;
+  }
+}
+
+int main() {
+  std::cout << "Decode" << std::endl;
+  decode();
+  std::cout << "Encode" << std::endl;
+  encode();
+
+  return 0;
+}
+```
 # License
 IPL has a Apache License 2.0 license, as found in the [LICENSE](https://github.com/IldarKashaev/IPL/blob/main/LICENSE) file.
