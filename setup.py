@@ -24,7 +24,10 @@ def build(): # pylint: disable=missing-function-docstring
 
   app_src_path = ['ipl/Image.cc',
                   'ipl/JpegDecoder.cc',
-                  'ipl/python/pytorch/PytorchJpegDecoder.cc']
+                  'ipl/JpegEncoder.cc',
+                  'ipl/python/pytorch/Ext.cc',
+                  'ipl/python/pytorch/PytorchJpegDecoder.cc',
+                  'ipl/python/pytorch/PytorchJpegEncoder.cc',]
 
   library = ['cuda']
   library += ['nvjpeg']
