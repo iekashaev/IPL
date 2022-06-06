@@ -18,9 +18,14 @@ project(IPL CUDA CXX)
 find_package(CUDA REQUIRED)
 find_library(NVJPEG_LIBRARY nvjpeg ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES} REQUIRED)
 
+find_library(NPPIF_LIBRARY nppif ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES})
+find_library(NPPC_LIBRARY nppc ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES})
+find_library(NPPIG_LIBRARY nppig ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES} REQUIRED)
+
+message(${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES})
 include_directories(${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}) 
 include_directories("${PROJECT_SOURCE_DIR}/include")
 
-add_executable(IPL main.cc ipl/JpegDecoder.cc ipl/JpegEncoder.cc ipl/Image.cc)
+add_executable(IPL main.cc ipl/JpegDecoder.cc ipl/JpegEncoder.cc ipl/Image.cc ipl/ImageResizer.cc)
 
-target_link_libraries(IPL ${CUDA_LIBRARIES} nvjpeg)
+target_link_libraries(IPL ${CUDA_LIBRARIES} nvjpeg ${NPPIF_LIBRARY} ${NPPC_LIBRARY} ${NPPIG_LIBRARY})
