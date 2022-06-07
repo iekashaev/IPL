@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#ifndef IPL_PYTHON_PYTORCH_PYTORCHIMAGERESIZER_H_
+#define IPL_PYTHON_PYTORCH_PYTORCHIMAGERESIZER_H_
+
 #include "ipl/ImageResizer.h"
 #include "torch/torch.h"
 
@@ -34,3 +37,5 @@ class PytorchImageResizer {
 }  // namespace pytorch
 }  // namespace python
 }  // namespace ipl
+
+#endif  // IPL_PYTHON_PYTORCH_PYTORCHIMAGERESIZER_H_
