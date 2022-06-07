@@ -12,21 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include "ipl/ImageResizer.h"
 #include "torch/torch.h"
 
 namespace ipl {
 namespace python {
 namespace pytorch {
 
-void init_decoder(const py::module_&);
-void init_encoder(const py::module_&);
-void init_resizer(const py::module_&);
+class PytorchImageResizer {
+ public:
+  PytorchImageResizer();
+  ~PytorchImageResizer();
 
-PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
-  init_decoder(m);
-  init_encoder(m);
-  init_resizer(m);
-}
+  bool init();
+  torch::Tensor resize(const torch::Tensor& image, const torch::Tensor& size);
+
+ private:
+  ImageResizer resizer_;
+};
 
 }  // namespace pytorch
 }  // namespace python
