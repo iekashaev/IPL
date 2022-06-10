@@ -22,10 +22,18 @@ find_library(NPPIF_LIBRARY nppif ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES})
 find_library(NPPC_LIBRARY nppc ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES})
 find_library(NPPIG_LIBRARY nppig ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES} REQUIRED)
 
-message(${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES})
+# LIBRARY TYPE
+option(BUILD_STATIC "Build IPL as static library" OFF)
+
+set(LIBTYPE SHARED)
+if(BUILD_STATIC)
+  set(LIBTYPE STATIC)
+endif()
+
 include_directories(${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}) 
 include_directories("${PROJECT_SOURCE_DIR}/include")
 
-add_executable(IPL main.cc ipl/JpegDecoder.cc ipl/JpegEncoder.cc ipl/Image.cc ipl/ImageResizer.cc)
+add_library(IPL ${LIBTYPE} ipl/JpegDecoder.cc ipl/JpegEncoder.cc
+                           ipl/Image.cc ipl/ImageResizer.cc)
 
 target_link_libraries(IPL ${CUDA_LIBRARIES} nvjpeg ${NPPIF_LIBRARY} ${NPPC_LIBRARY} ${NPPIG_LIBRARY})
