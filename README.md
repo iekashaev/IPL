@@ -15,7 +15,7 @@ python3 setup.py install
 ```shell
 mkdir build
 cd build
-cmake ..
+cmake [-DBUILD_STATIC=ON] ..
 make -j$(nproc)
 ```
 # Example
