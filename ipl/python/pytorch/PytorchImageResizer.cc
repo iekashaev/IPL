@@ -32,9 +32,7 @@ bool PytorchImageResizer::init() { return resizer_.init(); }
 torch::Tensor PytorchImageResizer::resize(const torch::Tensor& image,
                                           const torch::Tensor& size) {
   // Create image object from tensor
-  std::cout << size.sizes() << std::endl;
   auto im_size = image.sizes();
-  std::cout << size[0] << "\t" << size[1] << std::endl;
   Image img({im_size.at(0), im_size.at(1), im_size.at(2)}, image.data_ptr());
   Image resized = resizer_.resize(img, {512, 512});
   auto options =
@@ -47,7 +45,7 @@ void init_resizer(const py::module_& m) {
   py::class_<PytorchImageResizer>(m, "ImageResizer")
       .def(py::init<>())
       .def("init", &PytorchImageResizer::init)
-      .def("read_image", &PytorchImageResizer::resize, py::arg("image"),
+      .def("resize", &PytorchImageResizer::resize, py::arg("image"),
            py::arg("size"), py::call_guard<py::gil_scoped_release>());
 }
 
